@@ -18,17 +18,6 @@
 #include <frvt_structs.h>
 
 namespace FRVT_MORPH {
-
-/** Labels describing the type of image */
-enum class ImageLabel {
-    /** Image type is unknown or unassigned */
-    Unknown = 0,
-    /** Non-scanned image */
-    NonScanned,
-    /** Printed-and-scanned image */
-    Scanned
-};
-
 /**
  * @brief
  * The interface to FRVT MORPH implementation

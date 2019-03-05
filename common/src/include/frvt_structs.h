@@ -108,6 +108,26 @@ enum class TemplateRole {
     Search_1N
 };
 
+/** Labels describing the composition of the 1:N gallery
+ *  (provided as input into gallery finalization function)
+ */
+enum class GalleryType {
+    /** Consolidated, subject-based */
+    Consolidated,
+    /** Unconsolidated, event-based */
+    Unconsolidated
+};
+
+/** Labels describing image media type */
+enum class ImageLabel {
+    /** Image type is unknown or unassigned */
+    Unknown = 0,
+    /** Non-scanned image */
+    NonScanned,
+    /** Printed-and-scanned image */
+    Scanned
+};
+
 /**
  * @brief
  * Return codes for functions specified in this API
@@ -280,47 +300,6 @@ typedef struct EyePair
         yright{yright}
         {}
 } EyePair;
-
-
-/**
- * @brief
- * A structure to contain information about a subject useful for training/
- * model adaptation
- */
-typedef struct Attributes {
-    enum class Gender {Unknown, Male, Female};
-    enum class Race {Unknown, White, Black, EastAsian, SouthAsian, Hispanic};
-    enum class EyeGlasses {Unknown, NotWearing, Wearing};
-    enum class FacialHair {Unknown, Moustache, Goatee, Beard};
-    enum class SkinTone {Unknown, LightPink, LightYellow, MediumPinkBrown, MediumYellowBrown, MediumDarkBrown, DarkBrown};
-
-    /** A subject ID that identifies a person.  Images of the same
-     * person will have the same subject ID */
-    std::string id;
-    double age;
-    Gender gender;
-    Race race;
-    EyeGlasses eyeglasses;
-    FacialHair facialhair;
-    double height;
-    double weight;
-    SkinTone skintone;
-
-    Attributes() :
-        id{""},
-        age{-1.0},
-        gender{Gender::Unknown},
-        race{Race::Unknown},
-        eyeglasses{EyeGlasses::Unknown},
-        facialhair{FacialHair::Unknown},
-        height{-1.0},
-        weight{-1.0},
-        skintone{SkinTone::Unknown}
-        {}
-} Attributes;
-
-/** A pair of face image and associated attributes. */
-using faceAttributePair = std::pair<Image, Attributes>;
 }
 
 #endif /* FRVT_STRUCTS_H_ */

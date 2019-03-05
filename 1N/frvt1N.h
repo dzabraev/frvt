@@ -19,16 +19,6 @@
 
 namespace FRVT_1N {
 
-/** Labels describing the composition of the 1:N gallery
- *  (provided as input into gallery finalization function)
- */
-enum class GalleryType {
-    /** Consolidated, subject-based */
-    Consolidated,
-    /** Unconsolidated, event-based */
-    Unconsolidated
-};
-
 /**
  * @brief
  * Data structure for result of an identification search
