@@ -146,6 +146,7 @@ enum class ReturnCode {
 	/** Error occurred during the 1:1 match operation */
     MatchError,
     /** Failure to generate a quality score on the input image */
+    QualityAssessmentError,
     /** Function is not implemented */
     NotImplemented,
     /** Vendor-defined failure */
