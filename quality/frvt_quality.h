@@ -18,6 +18,35 @@
 #include <frvt_structs.h>
 
 namespace FRVT_QUALITY {
+enum class Property
+{
+	/* Imaging Properties */
+	Focus = 0,
+	MotionBlur,
+	Resolution,
+	SpatialSamplingRate,
+	Contrast,
+	IlluminationUniformity,
+	IlluminationAdequacy,
+	Distortion,
+	Noise,
+	Specularity,
+
+	/* Subject Properties */
+	Yaw,
+	Pitch,
+	Roll,
+	Expression,
+	EyeGlasses,
+	EyesClosed,
+	Occlusion
+};
+
+typedef struct QualityProperty
+{
+	Property property;
+	double value;
+} QualityProperty;
 
 /**
  * @brief
@@ -45,38 +74,19 @@ public:
      * files in this directory are hardwired in the implementation and are
      * unrestricted.
      */
-    virtual ReturnStatus
+    virtual FRVT::ReturnStatus
     initialize(const std::string &configDir) = 0;
 
     /**
-     * @brief This function takes a Multiface and outputs a proprietary template
-     * and associated eye coordinates.  The vectors to store the template and
-     * eye coordinates will be initially empty, and it is up to the implementation
-     * to populate them with the appropriate data.  In all cases, even when unable
-     * to extract features, the output shall be a template that may be passed to
-     * the match_templates function without error.  That is, this routine must
-     * internally encode "template creation failed" and the matcher must
-     * transparently handle this.
+     * @brief This function takes an image and outputs a quality scalar.
+     * The algorithm will be supplied with a label describing the type of image
+     * via Image::Label, and it is up to the implementation to alter its behavior
+     * based on the image type (e.g., Iso (full-frontal) versus Wild (off-angle).
      *
-     * param[in] faces
-     * Implementations must alter their behavior according to the number of
-     * images contained in the structure and the TemplateRole type.
-     * param[in] role
-     * Label describing the type/role of the template to be generated
-     * param[out] templ
-     * The output template.  The format is entirely unregulated.  This will be
-     * an empty vector when passed into the function, and the implementation
-     * can resize and populate it with the appropriate data.
-     * param[out] eyeCoordinates
-     * For each input image in the Multiface, the function shall return the
-     * estimated eye centers. This will be an empty vector when passed into the
-     * function, and the implementation shall populate it with the appropriate
-     * number of entries.  Values in eyeCoordinates[i] shall correspond to faces[i].
+     * param[in] face
+     * Single face image
      * param[out] quality
-     * For each image in the faces vector, an assessment of image quality.
-     * This will be an empty vector when passed into the function, and the
-     * implementation shall populate it with the appropriate number of entries.
-     * Values in quality[i] shall correspond to faces[i].  The legal values are
+     * A scalar value assessment of image quality.  The legal values are
      * [0,100] - The value should have a monotonic decreasing relationship with
      * false non-match rate anticipated for this sample if it was compared with
      * a pristine image of the same person.  So, a low value indicates high
@@ -84,13 +94,97 @@ public:
      * A value of -1.0 indicates a failed attempt to calculate a quality
      * score or the value is unassigned.
      */
-    virtual ReturnStatus
-    createTemplate(
-        const Multiface &faces,
-        TemplateRole role,
-        std::vector<uint8_t> &templ,
-        std::vector<EyePair> &eyeCoordinates,
-        std::vector<double> &quality) = 0;
+    virtual FRVT::ReturnStatus
+    scalarQuality(
+        const FRVT::Image &face,
+        double &quality) = 0;
+
+    /**
+     * @brief This function takes an image and outputs a quality scalar
+     * based on imaging properties of the photo.
+     *
+     * param[in] face
+     * Single face image
+     * param[out] quality
+     * A scalar value assessment of image quality.  The legal values are
+     * [0,100] - The value should have a monotonic decreasing relationship with
+     * false non-match rate anticipated for this sample if it was compared with
+     * a pristine image of the same person.  So, a low value indicates high
+     * expected FNMR.
+     * A value of -1.0 indicates a failed attempt to calculate a quality
+     * score or the value is unassigned.
+     */
+    virtual FRVT::ReturnStatus
+    scalarImagingQuality(
+        const FRVT::Image &face,
+        double &quality) = 0;
+
+    /**
+     * @brief This function takes an image and outputs a quality scalar
+     * based on properties related to the subject.
+     *
+     * param[in] face
+     * Single face image
+     * param[out] quality
+     * A scalar value assessment of image quality.  The legal values are
+     * [0,100] - The value should have a monotonic decreasing relationship with
+     * false non-match rate anticipated for this sample if it was compared with
+     * a pristine image of the same person.  So, a low value indicates high
+     * expected FNMR.
+     * A value of -1.0 indicates a failed attempt to calculate a quality
+     * score or the value is unassigned.
+     */
+    virtual FRVT::ReturnStatus
+    scalarSubjectQuality(
+        const FRVT::Image &face,
+        double &quality) = 0;
+
+    /**
+     * @brief This function takes a pair of images and outputs a quality scalar.
+     * The algorithm will be supplied with a label describing the type of image
+     * via Image::Label, and it is up to the implementation to alter its behavior
+     * based on the image type (e.g., Iso (full-frontal) versus Wild (off-angle).
+     *
+     * param[in] reference
+     * Single reference face image
+     * param[in] verif
+     * Single verification face image
+     * param[out] quality
+     * A scalar value assessment of image quality.  The legal values are
+     * [0,100] - The value should have a monotonic decreasing relationship with
+     * false non-match rate anticipated for the verification sample when compared with
+     * the reference image of the same person.  So, a low value indicates high
+     * expected FNMR.
+     * A value of -1.0 indicates a failed attempt to calculate a quality
+     * score or the value is unassigned.
+     */
+    virtual FRVT::ReturnStatus
+	scalarQuality(
+		const FRVT::Image &reference,
+		const FRVT::Image &verif,
+		double &quality) = 0;
+
+    /**
+     * @brief This function takes an image and reports a vector of properties related
+     * to face recognition failure. These quantify imaging-related
+     * properties such as focus, illumination, distortion, and noise, and
+     * also subject-related properties like head-pose, facial expression
+     * and eyeglasses effects.
+     *
+     * param[in] reference
+     * Single reference face image
+     * param[in] verif
+     * Single verification face image
+     * param[out] quality
+     * A vector of values representing certain image property assessments that
+     * impact image quality.  The output vector will initially be empty,
+     * and it is up to the implementation to populate it with the properties
+     * for which it can estimate.
+     */
+    virtual FRVT::ReturnStatus
+	vectorQuality(
+		const FRVT::Image &face,
+		std::vector<QualityProperty> &properties) = 0;
 
     /**
      * @brief
