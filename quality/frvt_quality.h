@@ -18,28 +18,31 @@
 #include <frvt_structs.h>
 
 namespace FRVT_QUALITY {
+
+/** Properties that impact image quality
+ */
 enum class Property
 {
-	/* Imaging Properties */
-	Focus = 0,
-	MotionBlur,
-	Resolution,
-	SpatialSamplingRate,
-	Contrast,
-	IlluminationUniformity,
-	IlluminationAdequacy,
-	Distortion,
-	Noise,
-	Specularity,
+    /* Imaging Properties */
+    Focus = 0,
+    MotionBlur,
+    Resolution,
+    SpatialSamplingRate,
+    Contrast,
+    IlluminationUniformity,
+    IlluminationAdequacy,
+    Distortion,
+    Noise,
+    Specularity,
 
-	/* Subject Properties */
-	Yaw,
-	Pitch,
-	Roll,
-	Expression,
-	EyeGlasses,
-	EyesClosed,
-	Occlusion
+    /* Subject Properties */
+    Yaw,
+    Pitch,
+    Roll,
+    Expression,
+    EyeGlasses,
+    EyesClosed,
+    Occlusion
 };
 
 typedef struct QualityProperty
@@ -160,9 +163,9 @@ public:
      */
     virtual FRVT::ReturnStatus
     scalarQuality(
-	    const FRVT::Image &reference,
-	    const FRVT::Image &verif,
-	    double &quality) = 0;
+	const FRVT::Image &reference,
+	const FRVT::Image &verif,
+	double &quality) = 0;
 
     /**
      * @brief This function takes an image and reports a vector of properties related
@@ -183,8 +186,8 @@ public:
      */
     virtual FRVT::ReturnStatus
     vectorQuality(
-	    const FRVT::Image &face,
-	    std::vector<QualityProperty> &properties) = 0;
+	const FRVT::Image &face,
+	std::vector<QualityProperty> &properties) = 0;
 
     /**
      * @brief
