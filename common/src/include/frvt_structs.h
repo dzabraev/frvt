@@ -143,7 +143,7 @@ enum class ReturnCode {
     InputLocationError,
     /** Memory allocation failed (e.g. out of memory) */
     MemoryError,
-	/** Error occurred during the 1:1 match operation */
+    /** Error occurred during the 1:1 match operation */
     MatchError,
     /** Failure to generate a quality score on the input image */
     QualityAssessmentError,
