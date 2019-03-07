@@ -145,8 +145,7 @@ enum class ReturnCode {
     MemoryError,
 	/** Error occurred during the 1:1 match operation */
     MatchError,
-	/** Failure to generate a quality score on the input image */
-	QualityAssessmentError,
+    /** Failure to generate a quality score on the input image */
     /** Function is not implemented */
     NotImplemented,
     /** Vendor-defined failure */
@@ -188,10 +187,10 @@ operator<<(
                 "seem incorrect");
     case ReturnCode::MemoryError:
         return (s << "Memory allocation failed (e.g. out of memory)");
-	case ReturnCode::MatchError:
+    case ReturnCode::MatchError:
         return (s << "Error occurred during the 1:1 match operation");
-	case ReturnCode::QualityAssessmentError:
-		return (s << "Failure to generate a quality score on the input image");
+    case ReturnCode::QualityAssessmentError:
+	return (s << "Failure to generate a quality score on the input image");
     case ReturnCode::NotImplemented:
         return (s << "Function is not implemented");
     case ReturnCode::VendorError:

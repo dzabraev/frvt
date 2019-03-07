@@ -159,10 +159,10 @@ public:
      * score or the value is unassigned.
      */
     virtual FRVT::ReturnStatus
-	scalarQuality(
-		const FRVT::Image &reference,
-		const FRVT::Image &verif,
-		double &quality) = 0;
+    scalarQuality(
+	    const FRVT::Image &reference,
+	    const FRVT::Image &verif,
+	    double &quality) = 0;
 
     /**
      * @brief This function takes an image and reports a vector of properties related
@@ -182,9 +182,9 @@ public:
      * for which it can estimate.
      */
     virtual FRVT::ReturnStatus
-	vectorQuality(
-		const FRVT::Image &face,
-		std::vector<QualityProperty> &properties) = 0;
+    vectorQuality(
+	    const FRVT::Image &face,
+	    std::vector<QualityProperty> &properties) = 0;
 
     /**
      * @brief
