@@ -27,6 +27,7 @@ enum class Property
 {
     /** Unknown or unassigned. */
     Unknown = 0,
+
     /** Imaging Properties */
     Focus,
     MotionBlur,
@@ -219,6 +220,24 @@ public:
     static std::shared_ptr<Interface>
     getImplementation();
 };
+
+/*
+ * API versioning
+ *
+ * NIST code will extern the version number symbols.
+ * Participant shall compile them into their core library.
+ */
+#ifdef NIST_EXTERN_API_VERSION
+/** API major version number. */
+extern uint16_t API_MAJOR_VERSION;
+/** API minor version number. */
+extern uint16_t API_MINOR_VERSION;
+#else /* NIST_EXTERN_API_VERSION */
+/** API major version number. */
+uint16_t API_MAJOR_VERSION{0};
+/** API minor version number. */
+uint16_t API_MINOR_VERSION{1};
+#endif /* NIST_EXTERN_API_VERSION */
 }
 
 #endif /* FRVT_QUALITY_H_ */
