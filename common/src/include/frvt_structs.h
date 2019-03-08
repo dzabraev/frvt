@@ -349,6 +349,24 @@ enum class ImageLabel {
     /** Printed-and-scanned image */
     Scanned
 };
+
+/*
+ * Versioning
+ *
+ * NIST code will extern the version number symbols. Participant
+ * shall compile them into their core library.
+ */
+#ifdef NIST_EXTERN_FRVT_STRUCTS_VERSION
+/** major version number. */
+extern uint16_t MAJOR_VERSION;
+/** minor version number. */
+extern uint16_t MINOR_VERSION;
+#else /* NIST_EXTERN_FRVT_STRUCTS_VERSION */
+/** major version number. */
+uint16_t MAJOR_VERSION{1};
+/** minor version number. */
+uint16_t MINOR_VERSION{0};
+#endif /* NIST_EXTERN_API_VERSION */
 }
 
 #endif /* FRVT_STRUCTS_H_ */
