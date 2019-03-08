@@ -19,12 +19,16 @@
 
 namespace FRVT_QUALITY {
 
-/** Properties that impact image quality
+/**
+ * @brief
+ * Properties that impact image quality
  */
 enum class Property
 {
-    /* Imaging Properties */
-    Focus = 0,
+    /** Unknown or unassigned. */
+    Unknown = 0,
+    /** Imaging Properties */
+    Focus,
     MotionBlur,
     Resolution,
     SpatialSamplingRate,
@@ -35,20 +39,32 @@ enum class Property
     Noise,
     Specularity,
 
-    /* Subject Properties */
+    /** Subject Properties */
     Yaw,
     Pitch,
     Roll,
     Expression,
     EyeGlasses,
     EyesClosed,
-    Occlusion
+    Occlusion,
 };
 
+/**
+ * @brief
+ * A structure to contain a value associated with a
+ * quality-related property
+ */
 typedef struct QualityProperty
 {
-	Property property;
-	double value;
+  /** @brief Property */
+    Property property;
+    /** @brief Value associated with property */
+    double value;
+
+    QualityProperty() :
+    	property{Property::Unknown},
+	value{-1.0}
+    	{}
 } QualityProperty;
 
 /**
@@ -59,9 +75,9 @@ typedef struct QualityProperty
  * The submission software under test will implement this interface by
  * sub-classing this class and implementing each method therein.
  */
-class QualityInterface {
+class Interface {
 public:
-    virtual ~QualityInterface() {}
+    virtual ~Interface() {}
 
     /**
      * @brief This function initializes the implementation under test.  It will
@@ -174,10 +190,8 @@ public:
      * also subject-related properties like head-pose, facial expression
      * and eyeglasses effects.
      *
-     * param[in] reference
-     * Single reference face image
-     * param[in] verif
-     * Single verification face image
+     * param[in] face
+     * Single face image
      * param[out] quality
      * A vector of values representing certain image property assessments that
      * impact image quality.  The output vector will initially be empty,
@@ -191,10 +205,10 @@ public:
 
     /**
      * @brief
-     * Factory method to return a managed pointer to the QualityInterface object.
+     * Factory method to return a managed pointer to the Interface object.
      * @details
      * This function is implemented by the submitted library and must return
-     * a managed pointer to the QualityInterface object.
+     * a managed pointer to the Interface object.
      *
      * This function MUST be implemented.
      *
@@ -202,7 +216,7 @@ public:
      * A possible implementation might be:
      * return (std::make_shared<Implementation>());
      */
-    static std::shared_ptr<QualityInterface>
+    static std::shared_ptr<Interface>
     getImplementation();
 };
 }
