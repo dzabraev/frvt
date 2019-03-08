@@ -99,7 +99,7 @@ using Multiface = std::vector<Image>;
  */
 enum class TemplateRole {
     /** 1:1 enrollment template */
-    Enrollment_11,
+    Enrollment_11 = 0,
     /** 1:1 verification template */
     Verification_11,
     /** 1:N enrollment template */
@@ -115,6 +115,8 @@ enum class TemplateRole {
 enum class ReturnCode {
     /** Success */
     Success = 0,
+    /** Catch-all error */
+    UnknownError,
     /** Error reading configuration files */
     ConfigError,
     /** Elective refusal to process the input */
@@ -162,6 +164,8 @@ operator<<(
     switch (rc) {
     case ReturnCode::Success:
         return (s << "Success");
+    case ReturnCode::UnknownError:
+        return (s << "Unknown Error");
     case ReturnCode::ConfigError:
         return (s << "Error reading configuration files");
     case ReturnCode::RefuseInput:
@@ -220,8 +224,8 @@ typedef struct ReturnStatus {
     std::string info;
 
     ReturnStatus() :
-    	code{ReturnCode::Success},
-		info{""}
+    	code{ReturnCode::UnknownError},
+	info{""}
     	{}
     /**
      * @brief
@@ -293,7 +297,7 @@ typedef struct EyePair
  */
 enum class GalleryType {
     /** Consolidated, subject-based */
-    Consolidated,
+    Consolidated = 0,
     /** Unconsolidated, event-based */
     Unconsolidated
 };
@@ -323,7 +327,7 @@ typedef struct Candidate {
     Candidate() :
         isAssigned{false},
         templateId{""},
-        similarityScore{0.0}
+        similarityScore{-1.0}
         {}
 
     Candidate(
