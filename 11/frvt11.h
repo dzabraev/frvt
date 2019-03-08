@@ -45,7 +45,7 @@ public:
      * files in this directory are hardwired in the implementation and are
      * unrestricted.
      */
-    virtual ReturnStatus
+    virtual FRVT::ReturnStatus
     initialize(const std::string &configDir) = 0;
 
     /**
@@ -72,25 +72,13 @@ public:
      * estimated eye centers. This will be an empty vector when passed into the
      * function, and the implementation shall populate it with the appropriate
      * number of entries.  Values in eyeCoordinates[i] shall correspond to faces[i].
-     * param[out] quality
-     * For each image in the faces vector, an assessment of image quality.
-     * This will be an empty vector when passed into the function, and the
-     * implementation shall populate it with the appropriate number of entries.
-     * Values in quality[i] shall correspond to faces[i].  The legal values are
-     * [0,100] - The value should have a monotonic decreasing relationship with
-     * false non-match rate anticipated for this sample if it was compared with
-     * a pristine image of the same person.  So, a low value indicates high
-     * expected FNMR.
-     * A value of -1.0 indicates a failed attempt to calculate a quality
-     * score or the value is unassigned.
      */
-    virtual ReturnStatus
+    virtual FRVT::ReturnStatus
     createTemplate(
-        const Multiface &faces,
-        TemplateRole role,
+        const FRVT::Multiface &faces,
+        FRVT::TemplateRole role,
         std::vector<uint8_t> &templ,
-        std::vector<EyePair> &eyeCoordinates,
-        std::vector<double> &quality) = 0;
+        std::vector<FRVT::EyePair> &eyeCoordinates) = 0;
 
     /**
      * @brief This function compares two proprietary templates and outputs a
@@ -112,49 +100,11 @@ public:
      * on the range [0,DBL_MAX].
      *
      */
-    virtual ReturnStatus
+    virtual FRVT::ReturnStatus
     matchTemplates(
         const std::vector<uint8_t> &verifTemplate,
         const std::vector<uint8_t> &enrollTemplate,
         double &similarity) = 0;
-
-    /**
-     * @brief This function provides the implementation with face images and
-     * associated attributes where available.  Attributes include a subject ID
-     * (this value is always assigned), and where available, subject data such
-     * as age, gender, race, and other information.  Images of the same person
-     * will have the same subject ID.  Genuine associations can be created
-     * using images with the same subject ID, and imposter associations can be
-     * derived using images with different subject IDs.  This function may or
-     * may not be called prior to creation of templates or matching.  The
-     * implementation’s ability to create or match templates should not be
-     * dependent on this function.
-     *
-     * @param[in] configDir
-     * A read-only directory containing any developer-supplied configuration
-     * parameters or run-time data.  The name of this directory is assigned by
-     * NIST, not hardwired by the provider.  The names of the
-     * files in this directory are hardwired in the implementation and are
-     * unrestricted.
-     * @param[in] trainedConfigDir
-     * A directory with read-write permissions where the implementation can
-     * store any training output.  The name of this directory is assigned by
-     * NIST, not hardwired by the provider.  The names of the files in this
-     * directory are hardwired in the implementation and are unrestricted.
-     * Important: This directory is what will subsequently be provided to the
-     * implementation’s initialize() function as the input configuration
-     * directory if this training function is invoked.  Therefore, at a minimum,
-     * even if you choose not to implement this function, the original
-     * configuration data in configDir must be copied over into this directory.
-     * @param[in] faces
-     * A vector of face image-subject attribute pairs provided to the
-     * implementation for training purposes
-     */
-    virtual ReturnStatus
-    train(
-        const std::string &configDir,
-        const std::string &trainedConfigDir,
-        const std::vector<faceAttributePair> &faces) = 0;
 
     /**
      * @brief
@@ -170,6 +120,24 @@ public:
     static std::shared_ptr<Interface>
     getImplementation();
 };
+
+/*
+ * API versioning
+ *
+ * NIST code will extern the version number symbols.
+ * Participant shall compile them into their core library.
+ */
+#ifdef NIST_EXTERN_API_VERSION
+/** API major version number. */
+extern uint16_t API_MAJOR_VERSION;
+/** API minor version number. */
+extern uint16_t API_MINOR_VERSION;
+#else /* NIST_EXTERN_API_VERSION */
+/** API major version number. */
+uint16_t API_MAJOR_VERSION{4};
+/** API minor version number. */
+uint16_t API_MINOR_VERSION{0};
+#endif /* NIST_EXTERN_API_VERSION */
 }
 
 #endif /* FRVT11_H_ */

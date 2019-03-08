@@ -26,9 +26,9 @@ namespace FRVT_MORPH {
  * The submission software under test will implement this interface by
  * sub-classing this class and implementing each method therein.
  */
-class MorphInterface {
+class Interface {
 public:
-    virtual ~MorphInterface() {}
+    virtual ~Interface() {}
 
     /**
      * @brief Before images are sent to any morph detection or match function,
@@ -48,7 +48,7 @@ public:
      * @param[in] configValue
      * An optional string value encoding developer-specific configuration parameters
      */
-    virtual ReturnStatus
+    virtual FRVT::ReturnStatus
     initialize(
         const std::string &configDir,
         const std::string &configValue) = 0;
@@ -79,10 +79,10 @@ public:
      * image contains a morph.  0 means certainty that image does not contain
      * a morph and 1 represents certainty that image contains a morph
      */
-    virtual ReturnStatus
+    virtual FRVT::ReturnStatus
     detectMorph(
-        const Image &suspectedMorph,
-        const ImageLabel &label,
+        const FRVT::Image &suspectedMorph,
+        const FRVT::ImageLabel &label,
         bool &isMorph,
         double &score) = 0;
 
@@ -118,11 +118,11 @@ public:
      * image contains a morph.  0 means certainty that image does not contain
      * a morph and 1 represents certainty that image contains a morph
      */
-    virtual ReturnStatus
+    virtual FRVT::ReturnStatus
     detectMorphDifferentially(
-        const Image &suspectedMorph,
-        const ImageLabel &label,
-        const Image &probeFace,
+        const FRVT::Image &suspectedMorph,
+        const FRVT::ImageLabel &label,
+        const FRVT::Image &probeFace,
         bool &isMorph,
         double &score) = 0;
 
@@ -144,59 +144,17 @@ public:
      * on the range [0,DBL_MAX].
      *
      */
-    virtual ReturnStatus
+    virtual FRVT::ReturnStatus
     compareImages(
-        const Image &enrollImage,
-        const Image &verifImage,
+        const FRVT::Image &enrollImage,
         double &similarity) = 0;
 
     /**
-     * @brief This function provides the implementation a list of face
-     * images and whether they are morphs.  This function may or
-     * may not be called prior to the various morph detection functions.  The
-     * implementation’s ability to detect morphs should not be dependent on this
-     * function.
-     *
-     * This function will be called from a single process/thread.
-     *
-     * If this function is not implemented, the algorithm shall return
-     * ReturnCode::NotImplemented.
-     *
-     * @param[in] configDir
-     * A read-only directory containing any developer-supplied configuration
-     * parameters or run-time data.  The name of this directory is assigned by
-     * NIST, not hardwired by the provider.  The names of the files in this
-     * directory are hardwired in the implementation and are unrestricted.
-     * @param[in] trainedConfigDir
-     * A directory with read-write permissions where the implementation can
-     * store any training output.  The name of this directory is assigned by
-     * NIST, not hardwired by the provider.  The names of the files in this
-     * directory are hardwired in the implementation and are unrestricted.
-     * This directory is what will subsequently be provided to the
-     * implementation’s initialize() function as the input configuration
-     * directory if this training function is invoked and implemented.
-     * If this function is optionally not implemented by the developer,
-     * the function shall do nothing and return ReturnCode::NotImplemented.
-     * @param[in] faces
-     * A vector of face images provided to the implementation for training purposes
-     * @param[in] isMorph
-     * A vector of boolean values indicating whether the corresponding face image
-     * is a morph or not.  The value in isMorph[i] corresponds
-     * to the face image in faces[i].
-     */
-    virtual ReturnStatus
-    trainMorphDetector(
-        const std::string &configDir,
-        const std::string &trainedConfigDir,
-        const std::vector<Image> &faces,
-        const std::vector<bool> &isMorph) = 0;
-
-    /**
      * @brief
-     * Factory method to return a managed pointer to the MorphInterface object.
+     * Factory method to return a managed pointer to the Interface object.
      * @details
      * This function is implemented by the submitted library and must return
-     * a managed pointer to the MorphInterface object.
+     * a managed pointer to the Interface object.
      *
      * This function MUST be implemented.
      *
@@ -204,9 +162,27 @@ public:
      * A possible implementation might be:
      * return (std::make_shared<Implementation>());
      */
-    static std::shared_ptr<MorphInterface>
+    static std::shared_ptr<Interface>
     getImplementation();
 };
+
+/*
+ * API versioning
+ *
+ * NIST code will extern the version number symbols.
+ * Participant shall compile them into their core library.
+ */
+#ifdef NIST_EXTERN_API_VERSION
+/** API major version number. */
+extern uint16_t API_MAJOR_VERSION;
+/** API minor version number. */
+extern uint16_t API_MINOR_VERSION;
+#else /* NIST_EXTERN_API_VERSION */
+/** API major version number. */
+uint16_t API_MAJOR_VERSION{1};
+/** API minor version number. */
+uint16_t API_MINOR_VERSION{2};
+#endif /* NIST_EXTERN_API_VERSION */
 }
 
 #endif /* FRVT_MORPH_H_ */
